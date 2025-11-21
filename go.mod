@@ -1,4 +1,5 @@
-module gin
+module github.com/safanadhira/FOODREVIEW
+
 
 go 1.25.3
 
