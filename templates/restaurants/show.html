@@ -1,0 +1,59 @@
+{{ define "restaurants/show.html" }}
+
+{{ template "layouts/header.html" . }}
+
+<div class="container">
+    
+    <div class="action-header">
+        <a href="/restaurants" class="btn">← Back</a>
+
+        <form action="/restaurants/{{ .Restaurant.ID }}/delete" method="POST">
+            <button class="btn btn-danger" 
+                    onclick="return confirm('Are you sure you want to delete this restaurant? All foods inside will be deleted too.')">
+                Delete Restaurant
+            </button>
+        </form>
+    </div>
+
+    <h2>{{ .Restaurant.Name }}</h2>
+    <p>{{ .Restaurant.Description }}</p>
+
+    {{ if .Restaurant.Image }}
+        <div class="restaurant-detail-img-container">
+            <img src="{{ .Restaurant.Image }}" alt="{{ .Restaurant.Name }}" style="width: 100%; height: auto; display: block;">
+        </div>
+    {{ end }}
+
+    <hr class="divider">
+
+    <h3>Foods from this restaurant</h3>
+
+    {{ if .Restaurant.Foods }}
+        {{ range .Restaurant.Foods }}
+            <div class="card">
+                <h4>{{ .Name }}</h4>
+                <p>{{ .Description }}</p>
+                <p>Price: ${{ .Price }}</p>
+
+                <div style="margin-top: 1rem;">
+                    <a href="/reviews/{{ .ID }}" class="btn">View Reviews</a>
+                    <a href="/reviews/create?food_id={{ .ID }}" class="btn">Add Review</a>
+                    
+                    <form action="/foods/{{ .ID }}/delete" method="POST" style="display: inline;">
+                        <button class="btn" onclick="return confirm('Delete this food?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {{ end }}
+    {{ else }}
+        <p>No foods listed for this restaurant yet.</p>
+    {{ end }}
+
+    <div class="add-food-section">
+        <a href="/restaurants/{{ .Restaurant.ID }}/foods/create" class="btn">+ Add Food</a>
+    </div>
+</div>
+
+{{ template "layouts/footer.html" . }}
+
+{{ end }}

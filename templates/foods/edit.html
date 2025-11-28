@@ -1,0 +1,32 @@
+{{ define "foods/edit.html" }}
+
+{{ template "layouts/header.html" . }}
+
+<div class="container">
+    <h2>Edit Food</h2>
+
+    <form action="/foods/{{ .Food.ID }}" method="POST">
+        <input type="hidden" name="_method" value="PUT">
+
+        <label for="name">Name</label>
+        <input type="text" name="name" value="{{ .Food.Name }}" required>
+
+        <label for="description">Review / Description</label>
+        <textarea name="description">{{ .Food.Description }}</textarea>
+
+        <label for="price">Price</label>
+        <input type="number" step="0.01" name="price" value="{{ .Food.Price }}">
+
+        <label for="restaurant_name">Restaurant Name</label>
+        <input type="text" name="restaurant_name" value="{{ .Food.Restaurant.Name }}" readonly style="background-color: #f0f0f0;">
+        <small style="color: grey;">*Restaurant usually cannot be changed directly here</small>
+
+        <div style="margin-top: 1rem;">
+            <button type="submit" class="btn">Update Food</button>
+        </div>
+    </form>
+</div>
+
+{{ template "layouts/footer.html" . }}
+
+{{ end }}

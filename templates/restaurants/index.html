@@ -1,0 +1,32 @@
+{{ define "restaurants/index.html" }}
+    {{ template "layouts/header.html" . }}
+    <div class="container">
+    <div class="container">
+        <h2>All Restaurants</h2>
+        <a href="/restaurants/create" class="btn">Add Restaurant</a>
+
+        <div class="horizontal-list"> 
+            {{ range .restaurants }}
+                {{ if .ID }}
+                <a href="/restaurants/{{ .ID }}" class="scroll-item-link">
+                    <div class="small-card"> 
+                        
+                        <div class="small-card-image-wrapper">
+                            {{ if .Image }}
+                                <img src="{{ .Image }}" alt="{{ .Name }}" class="small-card-img">
+                            {{ else }}
+                                <img src="/static/images/default-restaurant.png" alt="Default" class="small-card-img"> 
+                            {{ end }}
+                        </div>
+                        
+                        <h4>{{ .Name }}</h4> 
+                        
+                        </div>
+                </a>
+                {{ end }}
+            {{ end }}
+        </div>
+    </div>
+
+    {{ template "layouts/footer.html" . }}
+{{ end }}

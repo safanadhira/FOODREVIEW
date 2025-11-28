@@ -1,0 +1,28 @@
+{{ define "reviews/create.html" }}
+
+{{ template "layouts/header.html" . }}
+
+<div class="container">
+    <a href="/restaurants/{{ .Food.Restaurant.Name }}" class="btn">← Back to {{ .Food.Restaurant.Name }}</a>
+
+    <h2>Add Review for {{ .Food.Name }}</h2>
+
+    <form action="/reviews" method="POST">
+        <input type="hidden" name="food_id" value="{{ .Food.ID }}">
+
+        <label>Your Name</label>
+        <input type="text" name="reviewer_name" required>
+
+        <label for="rating">Rating (1–5)</label>
+        <input type="number" name="rating" min="1" max="5" required>
+
+        <label for="comment">Comment</label>
+        <textarea name="comment"></textarea>
+
+        <button type="submit" class="btn">Submit Review</button>
+    </form>
+</div>
+
+{{ template "layouts/footer.html" . }}
+
+{{ end }}

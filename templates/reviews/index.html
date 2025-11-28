@@ -1,0 +1,32 @@
+{{ define "reviews/index.html" }}
+
+{{ template "layouts/header.html" . }}
+
+<div class="container">
+    <a href="/restaurants/{{ .Food.Restaurant.ID }}" class="btn">← Back to {{ .Food.Restaurant.Name }}</a>
+    
+    <h2>Reviews for {{ .Food.Name }}</h2>
+
+    {{ if .Reviews }}
+        {{ range .Reviews }}
+            <div class="card">
+                <h4>{{ .ReviewerName }}</h4>
+                <p>{{ .Comment }}</p>
+                <small>Rating: {{ .Rating }}/5</small><br>
+                <small>Reviewed on: {{ .CreatedAt.Format "02 Jan 2006" }}</small>
+
+                <form action="/reviews/delete/{{ .ID }}" method="POST" style="margin-top: 0.5rem;">
+                    <button class="btn" type="submit" onclick="return confirm('Are you sure?')">Delete Review</button>
+                </form>
+            </div>
+        {{ end }}
+    {{ else }}
+        <p>No reviews yet.</p>
+    {{ end }}
+
+    <a href="/reviews/create?food_id={{ .Food.ID }}" class="btn">Add Review</a>
+</div>
+
+{{ template "layouts/footer.html" . }}
+
+{{ end }}

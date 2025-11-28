@@ -1,0 +1,32 @@
+{{ define "foods/index.html" }}
+
+{{ template "layouts/header.html" . }}
+
+<div class="container">
+    <h2>All Foods</h2>
+    <a href="/foods/create" class="btn">Add Food</a>
+
+    {{ if .Foods }}
+        {{ range .Foods }}
+        <div class="card">
+            <div>
+                <h4>{{ .Name }}</h4>
+                <p>{{ .Description }}</p>
+                <p>Price: ${{ .Price }}</p>
+                <p>Restaurant: {{ .Restaurant.Name }}</p>
+            </div>
+            
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <a href="/reviews/{{ .ID }}" class="btn">View Reviews</a>
+                <a href="/reviews/create?food_id={{ .ID }}" class="btn">Add Review</a>
+            </div>
+        </div>
+        {{ end }}
+    {{ else }}
+        <p>No foods available.</p>
+    {{ end }}
+</div>
+
+{{ template "layouts/footer.html" . }}
+
+{{ end }}

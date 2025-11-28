@@ -1,0 +1,32 @@
+{{ define "restaurants/edit.html" }}
+
+{{ template "layouts/header.html" . }}
+
+<div class="container">
+    <h2>Edit Restaurant</h2>
+
+    {{ if .Success }}
+        <div class="alert">{{ .Success }}</div>
+    {{ end }}
+
+    <form action="/restaurants/{{ .Restaurant.ID }}" method="POST" class="form">
+
+        <input type="hidden" name="_method" value="PUT">
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" name="name" value="{{ .Restaurant.Name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description">{{ .Restaurant.Description }}</textarea>
+        </div>
+
+        <button type="submit" class="btn">Update</button>
+    </form>
+</div>
+
+{{ template "layouts/footer.html" . }}
+
+{{ end }}

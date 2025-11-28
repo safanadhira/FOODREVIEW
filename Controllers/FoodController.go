@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/safanadhira/FOODREVIEW/initializers"
@@ -10,58 +12,65 @@ import (
 
 func FoodIndex(c *gin.Context) {
 	var foods []models.Food
-	initializers.DB.Find(&foods)
+	initializers.DB.Preload("Restaurant").Find(&foods)
 
-	c.JSON(http.StatusOK, foods)
+	c.HTML(http.StatusOK, "foods/index.html", gin.H{
+		"foods": foods,
+	})
 }
 
-func FoodStore(c *gin.Context) {
-	restaurantID := c.Param("ID")
+func FoodCreate(c *gin.Context) {
+	restaurantID := c.Param("id")
 
 	var restaurant models.Restaurant
-
 	if err := initializers.DB.First(&restaurant, restaurantID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Restaurant not found"})
-	}
-
-	var body struct {
-		Name        string  `json:"name"`
-		Price       float64 `json:"price"`
-		Description string  `json:"Description"`
-	}
-
-	if err := c.Bind(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Data"})
+		c.String(http.StatusNotFound, "Restaurant not found")
 		return
 	}
 
+	c.HTML(http.StatusOK, "foods/create.html", gin.H{
+		"restaurant": restaurant,
+	})
+}
+
+func FoodStore(c *gin.Context) {
+
+	restaurantID := c.Param("id")
+
+	var restaurant models.Restaurant
+	if err := initializers.DB.First(&restaurant, restaurantID).Error; err != nil {
+		c.String(http.StatusNotFound, "Restaurant not found")
+		return
+	}
+
+	name := c.PostForm("name")
+	description := c.PostForm("description")
+	priceStr := c.PostForm("price")
+
 	food := models.Food{
-		Name:         body.Name,
-		Price:        body.Price,
-		Description:  &body.Description,
+		Name:         name,
+		Description:  description,
+		Price:        priceStr,
 		RestaurantID: restaurant.ID,
 	}
 
 	initializers.DB.Create(&food)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Food added!", "food": food})
-
+	c.Redirect(http.StatusSeeOther, fmt.Sprintf("/restaurants/%d", restaurant.ID))
 }
-
 func FoodEdit(c *gin.Context) {
 	id := c.Param("id")
 
 	var food models.Food
-
-	if err := initializers.DB.First(&food, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "food not found"})
+	if err := initializers.DB.Preload("Restaurant").First(&food, id).Error; err != nil {
+		c.String(http.StatusNotFound, "Food not found")
 		return
 	}
 
 	var restaurants []models.Restaurant
 	initializers.DB.Find(&restaurants)
 
-	c.JSON(http.StatusOK, gin.H{
+	c.HTML(http.StatusOK, "foods/edit.html", gin.H{
 		"food":        food,
 		"restaurants": restaurants,
 	})
@@ -71,39 +80,42 @@ func FoodUpdate(c *gin.Context) {
 	id := c.Param("id")
 
 	var food models.Food
-
 	if err := initializers.DB.First(&food, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Food Not Found"})
+		c.String(http.StatusNotFound, "Food Not Found")
 		return
 	}
 
-	var body struct {
-		Name           string  `json:"name"`
-		Price          float64 `json:"price"`
-		Description    string  `json:"description"`
-		RestaurantName string  `json:"restaurant_name"`
+	name := c.PostForm("name")
+	priceStr := c.PostForm("price")                // Ambil harga sebagai string
+	description := c.PostForm("description")       // Ambil deskripsi sebagai string
+	restaurantIDStr := c.PostForm("restaurant_id") // Ambil ID Restoran sebagai string
+
+	// --- Konversi ID Restoran (Wajib karena RestaurantID adalah uint) ---
+	var restaurantIDUint uint = 0
+	if i, err := strconv.Atoi(restaurantIDStr); err == nil {
+		restaurantIDUint = uint(i)
 	}
+	// ------------------------------------------------------------------
 
-	if err := c.Bind(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Input"})
-		return
-	}
+	// --- HAPUS logic lama (ParseFloat) yang menyebabkan error kompilasi ---
+	// if p, err := strconv.ParseFloat(price, 64); err == nil { ... }
+	// -----------------------------------------------------------------------
 
-	var restaurant models.Restaurant
+	food.Name = name
 
-	initializers.DB.FirstOrCreate(&restaurant, models.Restaurant{Name: body.RestaurantName})
+	// FIX 1: food.Price (Assign string langsung, mengatasi error float64 vs string)
+	food.Price = priceStr
 
-	desc := body.Description
+	// FIX 2: food.Description (Assign string langsung, mengatasi error *string vs string)
+	food.Description = description
 
-	initializers.DB.Model(&food).Updates(models.Food{
-		Name:         body.Name,
-		Price:        body.Price,
-		Description:  &desc,
-		RestaurantID: restaurant.ID,
-	})
+	// FIX 3: Assign ID Restoran yang sudah dikonversi
+	food.RestaurantID = restaurantIDUint
 
-	c.JSON(http.StatusOK, gin.H{"message": "Food Updated", "food": food})
+	initializers.DB.Save(&food)
 
+	// FIX 4: Redirect ke halaman detail restoran (/restaurants/%d), bukan /foods (yang menyebabkan 404)
+	c.Redirect(http.StatusSeeOther, fmt.Sprintf("/restaurants/%d", food.RestaurantID))
 }
 
 func FoodDelete(c *gin.Context) {
@@ -111,11 +123,19 @@ func FoodDelete(c *gin.Context) {
 
 	var food models.Food
 
-	if err := initializers.DB.Preload("Restaurant").First(&food, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Food not found"})
+	err := initializers.DB.First(&food, id).Error
+
+	if err != nil {
+
+		c.Redirect(http.StatusSeeOther, fmt.Sprintf("/restaurants/%d", food.RestaurantID))
+		return
 	}
+
+	restaurantID := food.RestaurantID
+
+	initializers.DB.Where("food_id = ?", food.ID).Delete(&models.Review{})
 
 	initializers.DB.Delete(&food)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Food Deleted"})
+	c.Redirect(http.StatusSeeOther, fmt.Sprintf("/restaurants/%d", restaurantID))
 }

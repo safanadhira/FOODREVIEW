@@ -7,4 +7,5 @@ type Restaurant struct {
 	Rating      *int    `json:"class_rating"`                   // nullable
 	Image       *string `json:"image"`                          // nullable
 	Description *string `gorm:"type:text" json:"description"`   // nullable large text
+	Foods       []Food  `gorm:"foreignKey:RestaurantID"`
 }
