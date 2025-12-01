@@ -30,19 +30,39 @@
 
     {{ if .Restaurant.Foods }}
         {{ range .Restaurant.Foods }}
-            <div class="card">
-                <h4>{{ .Name }}</h4>
-                <p>{{ .Description }}</p>
-                <p>Price: Rp. {{ .Price }}</p>
-
-                <div style="margin-top: 1rem;">
-                    <a href="/reviews/{{ .ID }}" class="btn">View Reviews</a>
-                    <a href="/reviews/create?food_id={{ .ID }}" class="btn">Add Review</a>
-                    <a href="/foods/{{ .ID }}/edit" class="btn">Edit Food</a>
+            <div class="card" style="display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px;"> 
+                
+                <div style="display: flex; flex-direction: column; align-items: flex-start;">
                     
-                    <form action="/foods/{{ .ID }}/delete" method="POST" style="display: inline;">
-                        <button class="btn" onclick="return confirm('Delete this food?')">Delete</button>
-                    </form>
+                    {{ if .ImagePath }}
+                    <div class="food-image">
+                        <img src="{{ .ImagePath }}" alt="{{ .Name }}" style="width: 150px; height: 100px; object-fit: cover; border-radius: 5px;">
+                    </div>
+                    {{ end }}
+
+                    <div style="margin-top: 10px;">
+                        <h4>{{ .Name }}</h4>
+                        <p>{{ .Description }}</p>
+                    </div>
+
+                    <div class="food-actions" style="display: flex; flex-direction: row; gap: 5px; margin-top: 10px;">
+                        
+                        <a href="/reviews/{{ .ID }}" class="btn" style="text-align: center;">View Reviews</a> 
+                        <a href="/foods/{{ .ID }}/edit" class="btn btn-secondary" style="text-align: center;">Update Food</a>
+                        <a href="/reviews/create?food_id={{ .ID }}" class="btn" style="text-align: center;">Add Review</a>
+                        
+                        <form action="/foods/{{ .ID }}/delete" method="POST" style="display: inline;">
+                            <button class="btn btn-danger" onclick="return confirm('Delete this food?')">Delete</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div style="flex-grow: 1; display: flex; justify-content: flex-end;"> 
+                    
+                    <div style="text-align: right;">
+                        <p style="font-weight: bold; font-size: 1.2em; color: #ffffff;">Price: Rp. {{ .Price }}</p>
+                    </div>
+                    
                 </div>
             </div>
         {{ end }}
