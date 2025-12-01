@@ -7,6 +7,7 @@
 
     <form action="/foods/{{ .Food.ID }}" method="POST">
         <input type="hidden" name="_method" value="PUT">
+        <input type="hidden" name="restaurant_id" value="{{ .Food.RestaurantID }}">
 
         <label for="name">Name</label>
         <input type="text" name="name" value="{{ .Food.Name }}" required>
