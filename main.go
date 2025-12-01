@@ -16,9 +16,6 @@ func init() {
 func main() {
 	r := gin.Default()
 
-	r.RedirectTrailingSlash = false
-	r.RemoveExtraSlash = true
-
 	r.Static("/static", "./static")
 
 	r.LoadHTMLGlob("templates/**/*")
