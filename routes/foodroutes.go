@@ -12,11 +12,8 @@ func RegisterRoutes(r *gin.Engine) {
 
 	restaurant := r.Group("/restaurants")
 	{
-		restaurant.GET("", controllers.RestaurantIndex)
 		restaurant.GET("/", controllers.RestaurantIndex)
-
 		restaurant.GET("/create", controllers.RestaurantCreate)
-		restaurant.POST("", controllers.RestaurantStore)
 		restaurant.POST("/", controllers.RestaurantStore)
 		restaurant.GET("/:id", controllers.RestaurantShow)
 		restaurant.GET("/:id/foods/create", controllers.FoodCreate)
@@ -30,10 +27,10 @@ func RegisterRoutes(r *gin.Engine) {
 
 	food := r.Group("/foods")
 	{
-		// food.GET("/", controllers.FoodIndex)
+		food.GET("/", controllers.FoodIndex)
 		food.GET("/:id/edit", controllers.FoodEdit)
 
-		food.POST("/:id", controllers.FoodUpdate)
+		food.PUT("/:id", controllers.FoodUpdate)
 
 		food.DELETE("/:id", controllers.FoodDelete)
 
@@ -45,9 +42,9 @@ func RegisterRoutes(r *gin.Engine) {
 	{
 		review.GET("/create", controllers.ReviewCreate)
 
-		review.GET("/:id", controllers.ReviewIndex)
+		food.GET("/:id/reviews", controllers.ReviewIndex)
 
-		review.POST("", controllers.ReviewStore)
+		review.POST("/", controllers.ReviewStore)
 		review.POST("/delete/:id", controllers.ReviewDestroy)
 	}
 }

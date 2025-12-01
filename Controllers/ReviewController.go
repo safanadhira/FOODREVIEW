@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// --- Input Struct ---
 type ReviewInput struct {
 	FoodID       uint    `form:"food_id" binding:"required"`
 	ReviewerName string  `form:"reviewer_name" binding:"required"`
@@ -59,6 +60,7 @@ func ReviewCreate(c *gin.Context) {
 	})
 }
 
+// Simpan review baru
 func ReviewStore(c *gin.Context) {
 	var input ReviewInput
 	if err := c.ShouldBind(&input); err != nil {
@@ -85,7 +87,7 @@ func ReviewStore(c *gin.Context) {
 
 	initializers.DB.Create(&review)
 
-	c.Redirect(http.StatusSeeOther, fmt.Sprintf("/reviews/%d", input.FoodID))
+	c.Redirect(http.StatusSeeOther, fmt.Sprintf("/foods/%d/reviews", input.FoodID))
 }
 
 func ReviewDestroy(c *gin.Context) {
@@ -104,5 +106,6 @@ func ReviewDestroy(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusSeeOther, fmt.Sprintf("/reviews/%d", foodID))
+	// Redirect ke list review food yang sama
+	c.Redirect(http.StatusSeeOther, fmt.Sprintf("/foods/%d/reviews", foodID))
 }

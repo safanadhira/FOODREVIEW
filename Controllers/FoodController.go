@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/safanadhira/FOODREVIEW/initializers"
@@ -64,7 +63,7 @@ func FoodCreate(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "foods/create.html", gin.H{
-		"Restaurant": restaurant,
+		"restaurant": restaurant,
 	})
 }
 
@@ -88,10 +87,6 @@ func FoodStore(c *gin.Context) {
 	name := c.PostForm("name")
 	description := c.PostForm("description")
 	priceStr := c.PostForm("price")
-
-	cleanPrice := strings.ReplaceAll(priceStr, "Rp.", "")
-	cleanPrice = strings.ReplaceAll(cleanPrice, "$", "")
-	cleanPrice = strings.TrimSpace(cleanPrice)
 
 	food := models.Food{
 		Name: name,
@@ -154,14 +149,25 @@ func FoodUpdate(c *gin.Context) {
 
 	// 2. Handle Text Form Fields
 	name := c.PostForm("name")
-	priceStr := c.PostForm("price")
-	description := c.PostForm("description")
-	restaurantIDStr := c.PostForm("restaurant_id")
+	priceStr := c.PostForm("price")                // Ambil harga sebagai string
+	description := c.PostForm("description")       // Ambil deskripsi sebagai string
+	restaurantIDStr := c.PostForm("restaurant_id") // Ambil ID Restoran sebagai string
 
+	// --- Konversi ID Restoran (Wajib karena RestaurantID adalah uint) ---
 	var restaurantIDUint uint = 0
+	if i, err := strconv.Atoi(restaurantIDStr); err == nil {
+		restaurantIDUint = uint(i)
+	}
+	// ------------------------------------------------------------------
+
+	// --- HAPUS logic lama (ParseFloat) yang menyebabkan error kompilasi ---
+	// if p, err := strconv.ParseFloat(price, 64); err == nil { ... }
+	// -----------------------------------------------------------------------
 
 	food.Name = name
+	// FIX 1: food.Price (Assign string langsung, mengatasi error float64 vs string)
 	food.Price = priceStr
+	// FIX 2: food.Description (Assign string langsung, mengatasi error *string vs string)
 	food.Description = description
 	food.RestaurantID = restaurantIDUint // Note: You might want to handle this assignment differently
 
@@ -176,6 +182,7 @@ func FoodUpdate(c *gin.Context) {
 		return
 	}
 
+	// FIX 4: Redirect ke halaman detail restoran (/restaurants/%d), bukan /foods (yang menyebabkan 404)
 	c.Redirect(http.StatusSeeOther, fmt.Sprintf("/restaurants/%d", food.RestaurantID))
 }
 
