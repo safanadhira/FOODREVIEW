@@ -33,12 +33,11 @@
             <div class="card">
                 <h4>{{ .Name }}</h4>
                 <p>{{ .Description }}</p>
-                <p>Price: Rp. {{ .Price }}</p>
+                <p>Price: ${{ .Price }}</p>
 
                 <div style="margin-top: 1rem;">
                     <a href="/reviews/{{ .ID }}" class="btn">View Reviews</a>
                     <a href="/reviews/create?food_id={{ .ID }}" class="btn">Add Review</a>
-                    <a href="/foods/{{ .ID }}/edit" class="btn">Edit Food</a>
                     
                     <form action="/foods/{{ .ID }}/delete" method="POST" style="display: inline;">
                         <button class="btn" onclick="return confirm('Delete this food?')">Delete</button>
