@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -12,7 +14,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// --- Input Struct ---
 type RestaurantInput struct {
 	Name        string                `form:"name" binding:"required"`
 	Description *string               `form:"description"`
@@ -33,12 +34,10 @@ func RestaurantCreate(c *gin.Context) {
 }
 
 func RestaurantStore(c *gin.Context) {
-	// 1. Ambil data teks (Name, Description) secara manual dari form
-	//    Kita TIDAK menggunakan c.ShouldBind(&input) secara langsung karena ada file.
-	name := c.PostForm("name")
-	description := c.PostForm("description") // Asumsi Description adalah string non-pointer
 
-	// 2. Cek Unik Nama
+	name := c.PostForm("name")
+	description := c.PostForm("description")
+
 	var count int64
 	initializers.DB.Model(&models.Restaurant{}).Where("name = ?", name).Count(&count)
 
@@ -47,31 +46,26 @@ func RestaurantStore(c *gin.Context) {
 		return
 	}
 
-	// 3. --- LOGIKA FILE UPLOAD: Menggantikan c.FormFile & imagePathForDB ---
-	file, err := c.FormFile("image_upload_field") // Nama field harus sama dengan di form HTML!
+	file, err := c.FormFile("image_upload_field")
 	var imagePathForDB string
 
 	if err == nil {
-		// Simpan file ke folder static
 		filename := filepath.Base(file.Filename)
 		dst := filepath.Join("./static/images", filename)
 
 		if c.SaveUploadedFile(file, dst) == nil {
 			imagePathForDB = "/static/images/" + filename
 		} else {
-			// Jika SaveUploadedFile gagal, kita bisa log error atau menggunakan default
+
 			imagePathForDB = "/static/images/upload_failed.png"
 		}
 	} else {
-		// Jika tidak ada file diupload (atau error form)
 		imagePathForDB = "/static/images/default.png"
 	}
-	// ------------------------------------------------------------------------
 
-	// 4. Deklarasikan dan Isi struct Restaurant
 	restaurant := models.Restaurant{
 		Name: name,
-		// Asumsi Description di model adalah string non-pointer
+
 		Description: &description,
 		Image:       &imagePathForDB,
 	}
@@ -81,25 +75,22 @@ func RestaurantStore(c *gin.Context) {
 }
 
 func RestaurantShow(c *gin.Context) {
-	param := c.Param("id") // Menangkap parameter, bisa "1" atau "agus"
+	param := c.Param("id")
 
 	var restaurant models.Restaurant
 
-	// Siapkan base query dengan Preload Foods
 	query := initializers.DB.Preload("Foods")
 
-	// 1. Coba konversi parameter menjadi integer (membutuhkan import "strconv")
 	idInt, err := strconv.Atoi(param)
 
 	if err == nil {
-		// 2. Jika konversi berhasil (adalah angka/ID), cari berdasarkan Primary Key
+
 		query = query.Where("id = ?", idInt)
 	} else {
-		// 3. Jika konversi gagal (adalah string/Nama), cari berdasarkan kolom Name
+
 		query = query.Where("name = ?", param)
 	}
 
-	// 4. Eksekusi query
 	if err := query.First(&restaurant).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.String(http.StatusNotFound, "Restaurant not found")
@@ -109,7 +100,6 @@ func RestaurantShow(c *gin.Context) {
 		return
 	}
 
-	// 5. Render
 	c.HTML(http.StatusOK, "restaurants/show.html", gin.H{
 		"Restaurant": restaurant,
 	})
@@ -152,7 +142,6 @@ func RestaurantUpdate(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/restaurants")
 }
 
-// Delete restoran
 func RestaurantDestroy(c *gin.Context) {
 	id := c.Param("id")
 
@@ -160,6 +149,21 @@ func RestaurantDestroy(c *gin.Context) {
 	if err := initializers.DB.First(&restaurant, id).Error; err != nil {
 		c.String(http.StatusNotFound, "Restaurant not found")
 		return
+	}
+
+	if restaurant.Image != nil && *restaurant.Image != "" {
+		ImagePath := *restaurant.Image
+
+		if ImagePath != "/static/images/default.png" && ImagePath != "/statc/images/default-restaurat.png" {
+			systempath := "." + ImagePath
+
+			err := os.Remove(systempath)
+			if err != nil {
+				fmt.Println("Gagal menghapus", err)
+			} else {
+				fmt.Println("Berhasil Hapus file:", systempath)
+			}
+		}
 	}
 
 	initializers.DB.Delete(&restaurant)
