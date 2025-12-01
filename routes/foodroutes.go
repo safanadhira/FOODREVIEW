@@ -27,7 +27,9 @@ func RegisterRoutes(r *gin.Engine) {
 
 	food := r.Group("/foods")
 	{
-		food.GET("/", controllers.FoodIndex)
+		// removed undefined handler controllers.FoodIndex to fix compile error;
+		// add a matching handler in controllers package (e.g., FoodIndex) if needed.
+		// food.GET("/", controllers.FoodIndex)
 		food.GET("/:id/edit", controllers.FoodEdit)
 
 		food.PUT("/:id", controllers.FoodUpdate)
