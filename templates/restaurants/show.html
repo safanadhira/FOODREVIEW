@@ -13,6 +13,10 @@
                 Delete Restaurant
             </button>
         </form>
+
+        
+            <a href="/restaurants/{{ .Restaurant.ID }}/edit" class="btn btn-update">Update Restaurant</a>
+        </form>
     </div>
 
     <h2>{{ .Restaurant.Name }}</h2>

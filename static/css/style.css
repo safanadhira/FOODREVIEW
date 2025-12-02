@@ -250,6 +250,12 @@ input, select, textarea {
     color: white;
 }
 
+.btn-update {
+    background-color: #34495E;
+    border-color: #34495E;
+    color: white;
+}
+
 .btn-danger:hover {
     background-color: #b91c1c;
     border-color: #b91c1c;

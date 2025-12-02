@@ -115,7 +115,7 @@ func RestaurantEdit(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "restaurants/edit.html", gin.H{
-		"restaurant": restaurant,
+		"Restaurant": restaurant,
 	})
 }
 
@@ -129,14 +129,17 @@ func RestaurantUpdate(c *gin.Context) {
 		return
 	}
 
+	nama := c.PostForm("name")
+	desc := c.PostForm("description")
+
 	var input RestaurantInput
 	if err := c.ShouldBind(&input); err != nil {
 		c.String(http.StatusBadRequest, "Invalid input: "+err.Error())
 		return
 	}
 
-	restaurant.Name = input.Name
-	restaurant.Description = input.Description
+	restaurant.Name = nama
+	restaurant.Description = &desc
 	initializers.DB.Save(&restaurant)
 
 	c.Redirect(http.StatusSeeOther, "/restaurants")
