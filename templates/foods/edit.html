@@ -5,7 +5,7 @@
 <div class="container">
     <h2>Edit Food</h2>
 
-    <form action="/foods/{{ .Food.ID }}" method="POST">
+    <form action="/foods/{{ .Food.ID }}" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="_method" value="PUT">
         <input type="hidden" name="restaurant_id" value="{{ .Food.RestaurantID }}">
 

@@ -1,13 +1,21 @@
 body {
-    background-color: #976a6aff;
-    font-family: "Rubik", ui-sans-serif, system-ui, sans-serif;
-    color: #fff;
+    /* Background utama: Deep Charcoal */
+    background-color: #1A1A1D; 
+    
+    /* Terapkan font Playfair Display secara global */
+    font-family: "Playfair Display", Georgia, serif; 
+    
+    /* Menggunakan font weight yang lebih ringan untuk kesan elegan pada body text */
+    font-weight: 400; /* Diubah dari default browser */
+    
+    color: #fff; 
     margin: 0;
     padding: 0;
 }
 
 h1, h2, h3 {
-    color: #fff;
+    /* Heading tetap putih */
+    color: #fff; 
     font-weight: 700;
     margin: 1rem 0;
 }
@@ -30,7 +38,9 @@ p {
 }
 
 header {
-    background-color: #472e2eff;
+    /* Header: Dark Teal/Slate (Warna gelap yang berbeda dari body) */
+    background-color: #34495E; /* #472e2eff diganti */
+    
     color: #fff;
 }
 
@@ -45,9 +55,25 @@ header nav {
 
 header h1 {
     margin-right: auto;
-    color: #fff;
+    color: #fff; /* Ini mengatur warna h1 */
 }
 
+header h1 a {
+
+    
+    
+    color: #fff; 
+    text-decoration: none; 
+    
+    /* Tambahkan letter spacing halus untuk kesan mewah */
+    letter-spacing: 1px; 
+    
+    /* Membuat ukuran sedikit lebih besar dari h1 default */
+    font-size: 1.8rem; 
+    
+    /* Menggunakan font weight yang lebih ringan agar tidak terlalu tebal */
+    font-weight: 400;
+}
 form {
     max-width: 640px;
 }
@@ -69,16 +95,18 @@ input, select, textarea {
 }
 
 .card {
-    background-color: #472e2eff;
+
+    background-color: #34495E;
+    
     border-radius: 0.375rem;
-    border: 1px solid #ffffffff;
+    border: 1px solid #ffffff; 
+    
     padding: 0.75rem;
     margin: 0.5rem 0;
     display: block; 
-    color: #ffffffff;
+    color: #ffffff; /* Teks tetap putih */
     transition: background-color 0.2s;
 }
-
 .card-image-container{
     width: 100%;
     padding-top: 56.25%;
@@ -105,7 +133,7 @@ input, select, textarea {
 }
 
 .card:hover {
-    background-color: #976a6aff;
+    background-color: #343A40;
     cursor: pointer;
 }
 
@@ -154,7 +182,9 @@ input, select, textarea {
     border-radius: 8px;
     overflow: hidden;
     padding-bottom: 0.5rem; 
-    background-color: #472e2eff;
+    
+    background-color: #34495E; /* Diubah dari #472e2eff */
+    
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 

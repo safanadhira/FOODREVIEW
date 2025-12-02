@@ -154,7 +154,7 @@ func RestaurantDestroy(c *gin.Context) {
 	if restaurant.Image != nil && *restaurant.Image != "" {
 		ImagePath := *restaurant.Image
 
-		if ImagePath != "/static/images/default.png" && ImagePath != "/statc/images/default-restaurat.png" {
+		if ImagePath != "/static/images/default.png" && ImagePath != "/statc/images/default-restaurant.png" {
 			systempath := "." + ImagePath
 
 			err := os.Remove(systempath)

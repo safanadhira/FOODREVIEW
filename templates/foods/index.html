@@ -8,7 +8,13 @@
 
     {{ if .Foods }}
         {{ range .Foods }}
-        <div class="card">
+        <div class="card" style="display: flex; align-items: flex-start; gap: 20px;">
+            
+            {{ if .ImagePath }}
+            <div class="food-image">
+                <img src="{{ .ImagePath }}" alt="{{ .Name }}" style="width: 150px; height: 100px; object-fit: cover; border-radius: 5px;">
+            </div>
+            {{ end }}
             <div>
                 <h4>{{ .Name }}</h4>
                 <p>{{ .Description }}</p>
