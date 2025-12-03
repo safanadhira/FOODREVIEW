@@ -3,7 +3,7 @@ Names :
 2. Safa Nadhira
 
 About Our Project : Food Review Website
-Youtube Link : 
+Youtube Link : https://youtu.be/k7Pw-TrnxKg
 
 This project is a complete website where people can look at different restaurants, check out their menus, and write reviews for the food they eat. We built the whole system using the Go language and the Gin Framework for the back end, which is very fast and reliable. For storing all the information like restaurant names, menu items, and user reviews, we used a MySQL database managed by GORM. The website looks modern and easy to use because we designed the front end with a dark theme using Tailwind CSS.
 
